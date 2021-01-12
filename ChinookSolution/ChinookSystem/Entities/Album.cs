@@ -32,5 +32,11 @@ namespace ChinookSystem.Entities
             { _ReleaseLabel = string.IsNullOrEmpty(value) ? null : value; }
         }
 
+        //[NotMapped] annotations are also allowed
+
+        //Navigational properties *CHILD*
+        //many to one direction
+        public virtual Artist Artist { get; set; }
+
     }
 }
