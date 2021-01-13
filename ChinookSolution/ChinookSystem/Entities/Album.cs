@@ -37,6 +37,8 @@ namespace ChinookSystem.Entities
         //Navigational properties *CHILD*
         //many to one direction
         public virtual Artist Artist { get; set; }
+        //one to many direction
+        public virtual ICollection<Track> Track { get; set; }
 
     }
 }

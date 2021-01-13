@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ChinookSystem.Entities
 {
     [Table("MediaTypes")]
-    internal class MediaTypes
+    internal class MediaType
     {
         private string _Name;
         [Key]
@@ -28,5 +28,7 @@ namespace ChinookSystem.Entities
                 _Name = string.IsNullOrEmpty(value) ? null : value;
             }
         }
+
+        public virtual ICollection<Track> Tracks { get; set; }
     }
 }

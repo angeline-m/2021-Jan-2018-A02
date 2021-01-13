@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ChinookSystem.Entities
 {
+    [Table("Tracks")]
     internal class Track
     {
         private string _Composer;
@@ -18,13 +19,12 @@ namespace ChinookSystem.Entities
         public int TrackId { get; set; }
 
         [Required(ErrorMessage = "Track Name is required")]
-        [StringLength(120, ErrorMessage = "Track Name is limited to 120 characters.")]
+        [StringLength(200, ErrorMessage = "Track Name is limited to 200 characters.", MinimumLength = 1)]
         public string Name { get; set; }
         public int? AlbumId { get; set; }
-
-        [Required(ErrorMessage = "Media Type ID is required")]
         public int MediaTypeId { get; set; }
         public int? GenreId { get; set; }
+        [StringLength(220, ErrorMessage = "Composer is limited to 220 characters.")]
         public string Composer
         {
             get
@@ -43,5 +43,9 @@ namespace ChinookSystem.Entities
 
         [Required(ErrorMessage = "Unit Price is required")]
         public decimal UnitPrice { get; set; }
+
+        public virtual Genre Genre { get; set; }
+        public virtual MediaType MediaType { get; set; }
+        public virtual Album Album { get; set; }
     }
 }
