@@ -21,12 +21,31 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookSystemContext())
             {
-                IEnumerable<ArtistAlbums> results = from x in context.Albums select new ArtistAlbums
-                {
-                    Title = x.Title,
-                    ReleaseYear = x.ReleaseYear,
-                    ArtistName = x.Artist.Name
-                };
+                IEnumerable<ArtistAlbums> results = from x in context.Albums
+                                                    select new ArtistAlbums
+                                                    {
+                                                        Title = x.Title,
+                                                        ReleaseYear = x.ReleaseYear,
+                                                        ArtistName = x.Artist.Name
+                                                    };
+                return results.ToList();
+            }
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<ArtistAlbums> Albums_GetAlbumsForArtist(int artistID)
+        {
+            using (var context = new ChinookSystemContext())
+            {
+                IEnumerable<ArtistAlbums> results = from x in context.Albums
+                                                    where x.ArtistId == artistID
+                                                    select new ArtistAlbums
+                                                    {
+                                                        Title = x.Title,
+                                                        ReleaseYear = x.ReleaseYear,
+                                                        ArtistName = x.Artist.Name,
+                                                        ArtistId = x.ArtistId
+                                                    };
                 return results.ToList();
             }
         }
