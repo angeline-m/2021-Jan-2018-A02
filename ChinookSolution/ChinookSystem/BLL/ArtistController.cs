@@ -24,7 +24,7 @@ namespace ChinookSystem.BLL
                 IEnumerable<SelectionList> results = from x in context.Artists
                                                      select new SelectionList
                                                      {
-                                                         ValueField = x.ArtistID,
+                                                         ValueField = x.ArtistId,
                                                          DisplayField = x.Name
                                                      };
                 return results.ToList();

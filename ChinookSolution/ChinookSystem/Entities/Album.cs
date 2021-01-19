@@ -1,44 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-#region Additional Namespaces
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-#endregion
-
 namespace ChinookSystem.Entities
 {
-    [Table("Albums")]
-    internal class Album
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    internal partial class Album
     {
+
         private string _ReleaseLabel;
-        [Key]
-        public int AlbumID { get; set; }
-
-        [Required(ErrorMessage = "Album title is required")]
-        [StringLength(160, ErrorMessage = "Album title is limited to 160 characters.")]
-        public string Title { get; set; }
-        public int ArtistId { get; set; }
-        public int ReleaseYear { get; set; }
-
-        [StringLength(50, ErrorMessage = "Album release label is limited to 120 characters.")]
-        public string ReleaseLabel
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Album()
         {
-            get { return _ReleaseLabel; }
-            set
-            { _ReleaseLabel = string.IsNullOrEmpty(value) ? null : value; }
+            Tracks = new HashSet<Track>();
         }
 
-        //[NotMapped] annotations are also allowed
+        public int AlbumId { get; set; }
 
-        //Navigational properties *CHILD*
-        //many to one direction
+        [Required(ErrorMessage ="Album title is required.")]
+        [StringLength(160, MinimumLength = 1, ErrorMessage ="Album title is limited to 160 characters.")]
+        public string Title { get; set; }
+
+        public int ArtistId { get; set; }
+
+        public int ReleaseYear { get; set; }
+
+        [StringLength(50, ErrorMessage = "Album title is limited to 50 characters.")]
+        public string ReleaseLabel { 
+            get { return _ReleaseLabel; }
+            set { _ReleaseLabel = string.IsNullOrEmpty(value) ? null : value; }
+        }
+
         public virtual Artist Artist { get; set; }
-        //one to many direction
-        public virtual ICollection<Track> Track { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Track> Tracks { get; set; }
     }
 }

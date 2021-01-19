@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-#region Additional Namespaces
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-#endregion
-
 namespace ChinookSystem.Entities
 {
-    [Table("Tracks")]
-    internal class Track
-    {
-        private string _Composer;
-        [Key]
-        public int TrackId { get; set; }
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
-        [Required(ErrorMessage = "Track Name is required")]
-        [StringLength(200, ErrorMessage = "Track Name is limited to 200 characters.", MinimumLength = 1)]
-        public string Name { get; set; }
-        public int? AlbumId { get; set; }
-        public int MediaTypeId { get; set; }
-        public int? GenreId { get; set; }
-        [StringLength(220, ErrorMessage = "Composer is limited to 220 characters.")]
-        public string Composer
+    internal partial class Track
+    {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Track()
         {
-            get
-            {
-                return _Composer;
-            }
-            set
-            {
-                _Composer = string.IsNullOrEmpty(value) ? null : value;
-            }
+            InvoiceLines = new HashSet<InvoiceLine>();
+            PlaylistTracks = new HashSet<PlaylistTrack>();
         }
 
-        [Required(ErrorMessage = "Milliseconds is required")]
+        public int TrackId { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string Name { get; set; }
+
+        public int? AlbumId { get; set; }
+
+        public int MediaTypeId { get; set; }
+
+        public int? GenreId { get; set; }
+
+        [StringLength(220)]
+        public string Composer { get; set; }
+
         public int Milliseconds { get; set; }
+
         public int? Bytes { get; set; }
 
-        [Required(ErrorMessage = "Unit Price is required")]
+        [Column(TypeName = "numeric")]
         public decimal UnitPrice { get; set; }
 
-        public virtual Genre Genre { get; set; }
-        public virtual MediaType MediaType { get; set; }
         public virtual Album Album { get; set; }
+
+        public virtual Genre Genre { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
+
+        public virtual MediaType MediaType { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PlaylistTrack> PlaylistTracks { get; set; }
     }
 }
