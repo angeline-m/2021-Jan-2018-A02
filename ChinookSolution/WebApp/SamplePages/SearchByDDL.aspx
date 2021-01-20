@@ -51,7 +51,7 @@
                     No albums for the artist selection
                 </EmptyDataTemplate>
             </asp:GridView>
-            <asp:ObjectDataSource ID="ArtistListODS" runat="server" OldValuesParameterFormatString="original_{0}" SelectMethod="Artists_DDLList" TypeName="ChinookSystem.BLL.ArtistController"></asp:ObjectDataSource>
+            <asp:ObjectDataSource ID="ArtistListODS" runat="server" OldValuesParameterFormatString="original_{0}" SelectMethod="Artists_DDLList" TypeName="ChinookSystem.BLL.ArtistController" OnSelected="SelectCheckForException"></asp:ObjectDataSource>
         </div>
     </div>
 </asp:Content>
