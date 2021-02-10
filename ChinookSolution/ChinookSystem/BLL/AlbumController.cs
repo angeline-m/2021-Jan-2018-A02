@@ -77,7 +77,9 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookSystemContext())
             {
+                //in cpsc 1517 when entities were public, we could use the EF method extension .Find(xxx) to retrieve the database record on the primary key
                 //(...).FirstOrDefault will return either a) the first record matching the where condition b) a null value
+                // return context.DbSetname.Find(xxx);
                 var results = (from x in context.Albums
                                                  where x.AlbumId == albumid
                                                  select new AlbumItem
