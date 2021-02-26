@@ -62,9 +62,20 @@ namespace WebApp.SamplePages
 
         protected void ArtistFetch_Click(object sender, EventArgs e)
         {
-            
-                //code to go here
-
+            TracksBy.Text = "Artist";
+            if (string.IsNullOrEmpty(ArtistName.Text))
+            {
+                MessageUserControl.ShowInfo("You did not supply an artist name");
+                //The HiddenField content access is in .Value, not .Text
+                SearchArg.Value = "sfsfds";
+            }
+            else
+            {
+                SearchArg.Value = ArtistName.Text;
+            }
+            //to force the re-execution of an ODS attached to a control, rebidn the display control
+            TracksSelectionList.DataBind();
+                
           }
 
 

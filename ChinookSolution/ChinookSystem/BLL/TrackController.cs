@@ -47,19 +47,32 @@ namespace ChinookSystem.BLL
         //    }
         //}
 
-        [DataObjectMethod(DataObjectMethodType.Select,false)]
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
         public List<TrackList> List_TracksForPlaylistSelection(string tracksby, string arg)
         {
             using (var context = new ChinookSystemContext())
             {
                 List<TrackList> results = null;
-
-               //code to go here
+                
+                results = (from x in context.Tracks
+                                          where x.Album.Artist.Name.Contains(arg)
+                                          select new TrackList
+                                          {
+                                              TrackID = x.TrackId,
+                                              Name = x.Name,
+                                              Title = x.Album.Title,
+                                              ArtistName = x.Album.Artist.Name,
+                                              GenreName = x.Genre.Name,
+                                              Composer = x.Composer,
+                                              Milliseconds = x.Milliseconds,
+                                              Bytes = x.Bytes,
+                                              UnitPrice = x.UnitPrice
+                                          }).ToList();
 
                 return results;
             }
         }//eom
 
-       
+
     }//eoc
 }
