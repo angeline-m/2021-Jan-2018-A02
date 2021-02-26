@@ -21,7 +21,7 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookSystemContext())
             {
-                var results = from x in context.Genres
+                IEnumerable<SelectionList> results = from x in context.Genres
                               orderby x.Name
                               select new SelectionList
                               {
