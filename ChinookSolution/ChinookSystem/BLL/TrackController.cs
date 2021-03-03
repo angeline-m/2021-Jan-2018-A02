@@ -54,6 +54,86 @@ namespace ChinookSystem.BLL
             {
                 List<TrackList> results = null;
 
+                //Sol 3 - using id's for all input fields
+                //results = (from x in context.Tracks
+                //           where (tracksby.Equals("Artist") && x.Album.Artist.Name.Contains(arg)) || (tracksby.Equals("Genre") && x.Album.Title.Contains(arg)) || (tracksby.Equals("Genre") && x.GenreId.ToString().Equals(arg))
+                //           select new TrackList
+                //           {
+                //               TrackID = x.TrackId,
+                //               Name = x.Name,
+                //               Title = x.Album.Title,
+                //               ArtistName = x.Album.Artist.Name,
+                //               GenreName = x.Genre.Name,
+                //               Composer = x.Composer,
+                //               Milliseconds = x.Milliseconds,
+                //               Bytes = x.Bytes,
+                //               UnitPrice = x.UnitPrice
+                //           }).ToList();
+                //return results;
+                
+                //Sol 4 - using genre ddl display field to get genre
+                results = (from x in context.Tracks
+                           where (tracksby.Equals("Artist") && x.Album.Artist.Name.Contains(arg)) || (tracksby.Equals("Genre") && x.Album.Title.Contains(arg)) || (tracksby.Equals("Genre") && x.Genre.Name.Equals(arg))
+                           select new TrackList
+                           {
+                               TrackID = x.TrackId,
+                               Name = x.Name,
+                               Title = x.Album.Title,
+                               ArtistName = x.Album.Artist.Name,
+                               GenreName = x.Genre.Name,
+                               Composer = x.Composer,
+                               Milliseconds = x.Milliseconds,
+                               Bytes = x.Bytes,
+                               UnitPrice = x.UnitPrice
+                           }).ToList();
+                return results;
+
+
+
+
+
+                //sol 2
+                //int id = 0;
+                //if (int.TryParse(arg, out id))
+                //{
+                //    results = (from x in context.Tracks
+                //               where tracksby.Equals("Genre") && id == x.GenreId
+                //               select new TrackList
+                //               {
+                //                   TrackID = x.TrackId,
+                //                   Name = x.Name,
+                //                   Title = x.Album.Title,
+                //                   ArtistName = x.Album.Artist.Name,
+                //                   GenreName = x.Genre.Name,
+                //                   Composer = x.Composer,
+                //                   Milliseconds = x.Milliseconds,
+                //                   Bytes = x.Bytes,
+                //                   UnitPrice = x.UnitPrice
+                //               }).ToList();
+                //}
+                //else
+                //{
+                //    results = (from x in context.Tracks
+                //               where (tracksby.Equals("Artist") && id == x.GenreId) || (tracksby.Equals("Media"))
+                //               select new TrackList
+                //               {
+                //                   TrackID = x.TrackId,
+                //                   Name = x.Name,
+                //                   Title = x.Album.Title,
+                //                   ArtistName = x.Album.Artist.Name,
+                //                   GenreName = x.Genre.Name,
+                //                   Composer = x.Composer,
+                //                   Milliseconds = x.Milliseconds,
+                //                   Bytes = x.Bytes,
+                //                   UnitPrice = x.UnitPrice
+                //               }).ToList();
+
+
+                //}
+                //return results;
+
+
+                //sol 1
                 //if (tracksby.Equals("Artist"))
                 //{
                 //    results = (from x in context.Tracks
@@ -89,22 +169,7 @@ namespace ChinookSystem.BLL
                 //               }).ToList();
                 //}
 
-                results = (from x in context.Tracks
-                           where (tracksby.Equals("Artist") && x.Album.Artist.Name.Contains(arg)) || (tracksby.Equals("Album") && x.Album.Title.Contains(arg))
-                           select new TrackList
-                           {
-                               TrackID = x.TrackId,
-                               Name = x.Name,
-                               Title = x.Album.Title,
-                               ArtistName = x.Album.Artist.Name,
-                               GenreName = x.Genre.Name,
-                               Composer = x.Composer,
-                               Milliseconds = x.Milliseconds,
-                               Bytes = x.Bytes,
-                               UnitPrice = x.UnitPrice
-                           }).ToList();
 
-                return results;
             }
         }//eom
 
