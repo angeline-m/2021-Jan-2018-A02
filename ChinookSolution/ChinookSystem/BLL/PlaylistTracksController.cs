@@ -104,7 +104,8 @@ namespace ChinookSystem.BLL
                     else
                     {
                         //business rule broken, track does exist on the desired playlist
-                        brokenRules.Add(new BusinessRuleException<string>("Track already on playlist", nameof(song), song));
+                        brokenRules.Add(new BusinessRuleException<string>("Track already on playlist",
+                               nameof(song), song));
                     }
                 }
                 //add the track to the playlist in PlaylistTracks
