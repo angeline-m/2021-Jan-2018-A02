@@ -137,7 +137,7 @@ namespace ChinookSystem.BLL
                 if (brokenRules.Count() > 0)
                 {
                     //at least one record was recorded during the processing of the transaction
-                    throw new BusinessRuleCollectionException("Add Playlist Track Concerns");
+                    throw new BusinessRuleCollectionException("Add Playlist Track Concerns", brokenRules);
                 }
                 else
                 {
@@ -161,10 +161,69 @@ namespace ChinookSystem.BLL
 
         public void DeleteTracks(string username, string playlistname, List<int> trackstodelete)
         {
+            Playlist playlistExist = null;
+            PlaylistTrack playlistTrackExist = null;
+            int trackNumber = 0;
             using (var context = new ChinookSystemContext())
             {
-                //code to go here
+                if (string.IsNullOrEmpty(playlistname))
+                {
+                    //there is a data error
+                    //setting up an error message
+                    brokenRules.Add(new BusinessRuleException<string>("Playlist name is missing. Unable to remove track(s)", "Playlist Name", playlistname));
+                }
+                if (string.IsNullOrEmpty(username))
+                {
+                    //there is a data error
+                    //setting up an error message
+                    brokenRules.Add(new BusinessRuleException<string>("Username is missing. Unable to remove track(s)", "User name", username));
+                }
+                if (trackstodelete.Count == 0)
+                {
+                    //there is a data error
+                    //setting up an error message
+                    brokenRules.Add(new BusinessRuleException<int>("No tracks were selected. Unable to remove track(s)", "Track list count", 0));
+                }
+                playlistExist = (from x in context.Playlists
+                                 where x.Name.Equals(playlistname) &&
+                                        x.UserName.Equals(username)
+                                 select x).FirstOrDefault();
+                if (playlistExist == null)
+                {
+                    brokenRules.Add(new BusinessRuleException<string>("Playlist does not exist.", nameof(playlistname), playlistname));
+                }
+                else
+                {
+                    //list of all tracks that are to be kept
+                    var trackskept = context.PlaylistTracks
+                                    .Where(x => x.Playlist.Name.Equals(playlistname) &&
+                                    x.Playlist.UserName.Equals(username) &&
+                                    !trackstodelete.Any(tod => tod == x.TrackId))
+                                    .OrderBy(x => x.TrackNumber)
+                                    .Select(x => x);
 
+                    //remove the desired tracks
+                    PlaylistTrack item = null;
+                    foreach(var deleterecord in trackstodelete) //trackids to delete
+                    {
+                        //getting a single row
+                        item = context.PlaylistTracks
+                                    .Where(x => x.Playlist.Name.Equals(playlistname) &&
+                                    x.Playlist.UserName.Equals(username) &&
+                                    x.TrackId == deleterecord)
+                                    .Select(x => x).FirstOrDefault();
+
+                        //delete
+                        //stage (parent.navproperty.Remove())
+                        if (item != null)
+                        {
+                            playlistExist.PlaylistTracks.Remove(item);
+                        }
+                        
+                    }
+                }
+
+                //re-sequence the kept tracks
 
             }
         }//eom
