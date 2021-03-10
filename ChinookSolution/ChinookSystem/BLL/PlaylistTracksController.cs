@@ -87,10 +87,10 @@ namespace ChinookSystem.BLL
                     //tasks: does the track already exist on the playlist? if so, error
                     //if not, find the highest current tracknumber, increment by 1 (rule)
                     playlistTrackExist = (from x in context.PlaylistTracks
-                                     where x.Playlist.Name.Equals(playlistname) &&
-                                            x.Playlist.UserName.Equals(username) &&
-                                            x.TrackId == trackid
-                                     select x).FirstOrDefault();
+                                          where x.Playlist.Name.Equals(playlistname) &&
+                                                 x.Playlist.UserName.Equals(username) &&
+                                                 x.TrackId == trackid
+                                          select x).FirstOrDefault();
 
                     if (playlistTrackExist == null)
                     {
@@ -98,7 +98,7 @@ namespace ChinookSystem.BLL
                         trackNumber = (from x in context.PlaylistTracks
                                        where x.Playlist.Name.Equals(playlistname) &&
                                             x.Playlist.UserName.Equals(username)
-                                       select x.TrackNumber).Max();
+                                       select x.TrackNumber).Count();
                         trackNumber++;
                     }
                     else
@@ -149,7 +149,7 @@ namespace ChinookSystem.BLL
                 }
             }
         }//eom
-        public void MoveTrack(string username, string playlistname, int trackid, int tracknumber, string direction)
+        public void MoveTrack(MoveTrackItem movetrack)
         {
             using (var context = new ChinookSystemContext())
             {
@@ -162,7 +162,7 @@ namespace ChinookSystem.BLL
         public void DeleteTracks(string username, string playlistname, List<int> trackstodelete)
         {
             Playlist playlistExist = null;
-            PlaylistTrack playlistTrackExist = null;
+            //PlaylistTrack playlistTrackExist = null;
             int trackNumber = 0;
             using (var context = new ChinookSystemContext())
             {
@@ -204,7 +204,7 @@ namespace ChinookSystem.BLL
 
                     //remove the desired tracks
                     PlaylistTrack item = null;
-                    foreach(var deleterecord in trackstodelete) //trackids to delete
+                    foreach (var deleterecord in trackstodelete) //trackids to delete
                     {
                         //getting a single row
                         item = context.PlaylistTracks
@@ -219,12 +219,33 @@ namespace ChinookSystem.BLL
                         {
                             playlistExist.PlaylistTracks.Remove(item);
                         }
-                        
+
+                    }
+
+
+                    //re-sequence the kept tracks
+                    //option a) use a list and update the records of the list
+                    //option b) delete all children records and re-add only the necessary kept records
+                    //within this example, you will see how to to update specific column(s) of a record (option a)
+                    trackNumber = 1;
+                    foreach (var track in trackskept)
+                    {
+                        track.TrackNumber = trackNumber;
+                        //stage the update
+                        context.Entry(track).Property(nameof(PlaylistTrack.TrackNumber)).IsModified = true;
+                        trackNumber++;
                     }
                 }
 
-                //re-sequence the kept tracks
-
+                //commit?
+                if (brokenRules.Count > 0)
+                {
+                    throw new BusinessRuleCollectionException("Track Removal Concerns:", brokenRules);
+                }
+                else
+                {
+                    context.SaveChanges();
+                }
             }
         }//eom
     }
