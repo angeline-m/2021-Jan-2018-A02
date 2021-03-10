@@ -75,8 +75,8 @@ namespace WebApp.SamplePages
             }
             //to force the re-execution of an ODS attached to a control, rebind the display control
             TracksSelectionList.DataBind();
-                
-          }
+
+        }
 
 
         protected void GenreFetch_Click(object sender, EventArgs e)
@@ -121,7 +121,7 @@ namespace WebApp.SamplePages
             //username is coming from the system via security
             //since security has yet to be installed, a default will be setup for the username value
             string username = "HansenB";
-            if(string.IsNullOrEmpty(PlaylistName.Text))
+            if (string.IsNullOrEmpty(PlaylistName.Text))
             {
                 MessageUserControl.ShowInfo("Playlist Search", "No playlists name was supplied");
             }
@@ -132,13 +132,14 @@ namespace WebApp.SamplePages
                 //MessageUserControl has the try/catch embedded within the control logic
                 //within the MessageUserControl there exists a method called .TryRun()
                 //syntax: MessageUserControl.TryRun(() => { your coding logic }[, "Message title", "Success message"]);
-                MessageUserControl.TryRun(() => {
+                MessageUserControl.TryRun(() =>
+                {
                     PlaylistTracksController sysmgr = new PlaylistTracksController();
                     RefreshPlayList(sysmgr, username);
                 }, "Playlist Search", "View the requested playlist below");
-                
+
             }
- 
+
         }
 
         protected void RefreshPlayList(PlaylistTracksController sysmgr, string username)
@@ -159,7 +160,7 @@ namespace WebApp.SamplePages
             {
                 if (PlayList.Rows.Count == 0)
                 {
-                    MessageUserControl.ShowInfo("Track Movement", "You must have a playlist visible to choose tracks for movement. Select from the displayed playlist.");
+                    MessageUserControl.ShowInfo("Track Movement", "You must have a play list visible to choose tracks for movement. Select from the displayed playlist.");
                 }
                 else
                 {
@@ -167,7 +168,7 @@ namespace WebApp.SamplePages
                     int rowsSelected = 0;
                     CheckBox trackSelection = null;
                     //traverse the gridview control PlayList
-                    //you could do this same code using a foreach()
+                    //you could do this same code using a foreah()
                     for (int i = 0; i < PlayList.Rows.Count; i++)
                     {
                         //point to the checkbox control on the gridview row
@@ -186,20 +187,22 @@ namespace WebApp.SamplePages
                     {
                         case 0:
                             {
-                                MessageUserControl.ShowInfo("Track Movement", "You must select at least one song to move.");
+                                MessageUserControl.ShowInfo("Track Movement", "You must select   one song to move.");
                                 break;
                             }
                         case 1:
                             {
                                 //rule: do not move if last song
-                                if (moveTrack.TrackNumber == 1)
+                                if (moveTrack.TrackNumber == PlayList.Rows.Count)
                                 {
-                                    MessageUserControl.ShowInfo("Track Movement", "Song selected is already the first song. Moving down is not necessary.");
+                                    MessageUserControl.ShowInfo("Track Movement", "Song select is already the last song. Moving down not necessary.");
                                 }
                                 else
                                 {
-                                    moveTrack.Direction = "up";
+                                    moveTrack.Direction = "down";
+                                    MoveTrack(moveTrack);
                                 }
+
                                 break;
                             }
                         default:
@@ -209,16 +212,13 @@ namespace WebApp.SamplePages
                                 break;
                             }
                     }
-
                 }
-
             }
 
         }
 
         protected void MoveUp_Click(object sender, EventArgs e)
         {
-            //form event validation: presence
             if (string.IsNullOrEmpty(PlaylistName.Text))
             {
                 MessageUserControl.ShowInfo("Missing Data", "Enter a playlist name");
@@ -227,7 +227,7 @@ namespace WebApp.SamplePages
             {
                 if (PlayList.Rows.Count == 0)
                 {
-                    MessageUserControl.ShowInfo("Track Movement", "You must have a playlist visible to choose tracks for movement. Select from the displayed playlist.");
+                    MessageUserControl.ShowInfo("Track Movement", "You must have a play list visible to choose tracks for movement. Select from the displayed playlist.");
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace WebApp.SamplePages
                     int rowsSelected = 0;
                     CheckBox trackSelection = null;
                     //traverse the gridview control PlayList
-                    //you could do this same code using a foreach()
+                    //you could do this same code using a foreah()
                     for (int i = 0; i < PlayList.Rows.Count; i++)
                     {
                         //point to the checkbox control on the gridview row
@@ -254,20 +254,22 @@ namespace WebApp.SamplePages
                     {
                         case 0:
                             {
-                                MessageUserControl.ShowInfo("Track Movement", "You must select at least one song to move.");
+                                MessageUserControl.ShowInfo("Track Movement", "You must select   one song to move.");
                                 break;
                             }
                         case 1:
                             {
                                 //rule: do not move if last song
-                                if (moveTrack.TrackNumber == PlayList.Rows.Count)
+                                if (moveTrack.TrackNumber == 1)
                                 {
-                                    MessageUserControl.ShowInfo("Track Movement", "Song selected is already the last song. Moving down is not necessary.");
+                                    MessageUserControl.ShowInfo("Track Movement", "Song select is already the first song. Moving up not necessary.");
                                 }
                                 else
                                 {
-                                    moveTrack.Direction = "down";
+                                    moveTrack.Direction = "up";
+                                    MoveTrack(moveTrack);
                                 }
+
                                 break;
                             }
                         default:
@@ -277,9 +279,7 @@ namespace WebApp.SamplePages
                                 break;
                             }
                     }
-
                 }
-
             }
 
 
@@ -324,7 +324,7 @@ namespace WebApp.SamplePages
                     CheckBox trackSelection = null;
                     //traverse the gridview control PlayList
                     //you could do this same code using a foreach()
-                    for(int i = 0; i < PlayList.Rows.Count; i++)
+                    for (int i = 0; i < PlayList.Rows.Count; i++)
                     {
                         //point to the checkbox control on the gridview row
                         trackSelection = PlayList.Rows[i].FindControl("Selected") as CheckBox;
@@ -344,7 +344,7 @@ namespace WebApp.SamplePages
                     else
                     {
                         //data collected, send for processing
-                        MessageUserControl.TryRun(() => 
+                        MessageUserControl.TryRun(() =>
                         {
                             PlaylistTracksController sysmgr = new PlaylistTracksController();
                             sysmgr.DeleteTracks(username, PlaylistName.Text, trackids);
@@ -358,20 +358,21 @@ namespace WebApp.SamplePages
 
         }
 
-        protected void TracksSelectionList_ItemCommand(object sender, 
+        protected void TracksSelectionList_ItemCommand(object sender,
             ListViewCommandEventArgs e)
         {
             string username = "HansenB"; //until security is implemented
 
             //form event validation: presence
-            if(string.IsNullOrEmpty(PlaylistName.Text))
+            if (string.IsNullOrEmpty(PlaylistName.Text))
             {
                 MessageUserControl.ShowInfo("Missing Data", "Enter a playlist name");
             }
             else
             {
                 //Reminder: MessageUserControl will do the error handling
-                MessageUserControl.TryRun(() => {
+                MessageUserControl.TryRun(() =>
+                {
                     //logic for your coding block
                     PlaylistTracksController sysmgr = new PlaylistTracksController();
                     //access a specific field on the selected ListView row
@@ -382,7 +383,7 @@ namespace WebApp.SamplePages
 
                 }, "Add Track to Playlist", "Track has been added to the playlist");
             }
-            
+
         }
 
     }
