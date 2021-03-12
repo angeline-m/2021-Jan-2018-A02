@@ -151,13 +151,147 @@ namespace ChinookSystem.BLL
         }//eom
         public void MoveTrack(MoveTrackItem movetrack)
         {
+            int numberoftracks = 0;
             using (var context = new ChinookSystemContext())
             {
-                //code to go here 
+                if (string.IsNullOrEmpty(movetrack.PlaylistName))
+                {
+                    //there is a data error
+                    //setting up an error message
+                    brokenRules.Add(new BusinessRuleException<string>("Playlist name is missing. Unable to remove track(s)", nameof(MoveTrackItem.PlaylistName), movetrack.PlaylistName));
+                }
+                if (string.IsNullOrEmpty(movetrack.UserName))
+                {
+                    //there is a data error
+                    //setting up an error message
+                    brokenRules.Add(new BusinessRuleException<string>("Username is missing. Unable to remove track(s)", "User name", movetrack.UserName));
+                }
+                if (movetrack.TrackID <= 0)
+                {
+                    brokenRules.Add(new BusinessRuleException<int>("Invalid track identifier", nameof(MoveTrackItem.TrackID), movetrack.TrackID));
+                }
+                Playlist exist = (from x in context.Playlists
+                                  where x.Name.Equals(movetrack.PlaylistName) &&
+                                      x.UserName.Equals(movetrack.UserName)
+                                  select x).FirstOrDefault();
+                if (exist == null)
+                {
+                    brokenRules.Add(new BusinessRuleException<string>("Playlist does not exist.", nameof(movetrack.PlaylistName), movetrack.PlaylistName));
+                }
+                else
+                {
+                    //due to the way that Linq executes in your program as a "lazy loader"
+                    //we need to query directly the number of tracks in the playlist
+                    numberoftracks = (context.PlaylistTracks
+                                        .Where(x => x.Playlist.Name.Equals(movetrack.PlaylistName)
+                                        && x.Playlist.UserName.Equals(movetrack.UserName))
+                                        .Select(x => x)).Count();
+                    //numberoftracks = exist.PlaylistTracks.Count();
+                    //numberoftracks++;
 
+                    //check to see if the desired track exists on the database
+                    PlaylistTrack trackexist = (from x in context.PlaylistTracks
+                                                where x.Playlist.Name.Equals(movetrack.PlaylistName) &&
+                                                    x.Playlist.UserName.Equals(movetrack.UserName) &&
+                                                    x.TrackId == movetrack.TrackID
+                                                select x).FirstOrDefault();
+
+                    if (trackexist == null)
+                    {
+                        brokenRules.Add(new BusinessRuleException<string>("Playlist does not exist.", nameof(movetrack.PlaylistName), movetrack.PlaylistName));
+                    }
+                    else
+                    {
+                        //decide the logic depending on direction
+                        if (movetrack.Direction.Equals("up"))
+                        {
+                            //up
+                            //check track is not at top
+                            if (trackexist.TrackNumber == 1)
+                            {
+                                brokenRules.Add(new BusinessRuleException<string>("Playlist track already at the top. Refresh your display.", nameof(Track.Name), trackexist.Track.Name));
+                            }
+                            else
+                            {
+                                //do the move
+                                //get the adjacent track
+                                PlaylistTrack othertrack = (from x in context.PlaylistTracks
+                                                            where x.Playlist.Name.Equals(movetrack.PlaylistName) &&
+                                                            x.Playlist.UserName.Equals(movetrack.UserName) &&
+                                                            x.TrackNumber == trackexist.TrackNumber - 1
+                                                            select x).FirstOrDefault();
+
+
+                                if (othertrack == null)
+                                {
+                                    brokenRules.Add(new BusinessRuleException<string>("Playlist track to swap seems to be missing. Refresh your display.", nameof(MoveTrackItem.PlaylistName), movetrack.PlaylistName));
+                                }
+                                else
+                                {
+                                    //good to swap
+                                    //the swap is a matter of changing the track number values
+                                    trackexist.TrackNumber -= 1;
+                                    othertrack.TrackNumber += 1;
+
+                                    //staging
+                                    context.Entry(trackexist).Property(nameof(PlaylistTrack.TrackNumber)).IsModified = true;
+                                    context.Entry(othertrack).Property(nameof(PlaylistTrack.TrackNumber)).IsModified = true;
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //down
+                            //check track is not at bottom
+                            if (trackexist.TrackNumber == numberoftracks)
+                            {
+                                brokenRules.Add(new BusinessRuleException<string>("Playlist track already at the bottom. Refresh your display.", nameof(Track.Name), trackexist.Track.Name));
+                            }
+                            else
+                            {
+                                //do the move
+                                //get the adjacent track
+                                PlaylistTrack othertrack = (from x in context.PlaylistTracks
+                                                            where x.Playlist.Name.Equals(movetrack.PlaylistName) &&
+                                                            x.Playlist.UserName.Equals(movetrack.UserName) &&
+                                                            x.TrackNumber == trackexist.TrackNumber + 1
+                                                            select x).FirstOrDefault();
+
+
+                                if (othertrack == null)
+                                {
+                                    brokenRules.Add(new BusinessRuleException<string>("Playlist track to swap seems to be missing. Refresh your display.", nameof(MoveTrackItem.PlaylistName), movetrack.PlaylistName));
+                                }
+                                else
+                                {
+                                    //good to swap
+                                    //the swap is a matter of changing the track number values
+                                    trackexist.TrackNumber += 1;
+                                    othertrack.TrackNumber -= 1;
+
+                                    //staging
+                                    context.Entry(trackexist).Property(nameof(PlaylistTrack.TrackNumber)).IsModified = true;
+                                    context.Entry(othertrack).Property(nameof(PlaylistTrack.TrackNumber)).IsModified = true;
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+                //commit?
+                if (brokenRules.Count > 0)
+                {
+                    throw new BusinessRuleCollectionException("Track Movement Concerns:", brokenRules);
+                }
+                else
+                {
+                    context.SaveChanges();
+                }
             }
-        }//eom
 
+        } //eom
 
         public void DeleteTracks(string username, string playlistname, List<int> trackstodelete)
         {
