@@ -118,6 +118,10 @@
                                         href="~/SamplePages/ManagePlaylist.aspx"
                                         style="color:black" runat="server">
                                    OLTP Manage Playlist</a>
+                                <a class="dropdown-item"
+                                        href="~/SamplePages/MultiViewSetup.aspx"
+                                        style="color:black" runat="server">
+                                   Setting up a MultiView control</a>
                             </div>
                          </li>
                          <li class="nav-item">
