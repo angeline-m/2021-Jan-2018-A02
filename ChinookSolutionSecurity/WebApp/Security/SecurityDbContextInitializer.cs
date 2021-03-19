@@ -70,7 +70,7 @@ namespace WebApp.Security
                 Email = employeeEmail,
                 EmployeeId = 20,
                 CustomerId = null
-            }, customerPassword);
+            }, employeePassword);
             if (result.Succeeded)
                 userManager.AddToRole(userManager.FindByName(employeeUser).Id, employeeRole);
 
