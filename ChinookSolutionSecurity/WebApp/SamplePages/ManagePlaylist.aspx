@@ -221,6 +221,13 @@
                             Text='<%# Eval("UnitPrice") %>'></asp:Label>
                     </ItemTemplate>
                 </asp:TemplateField>
+                <%--<asp:TemplateField HeaderText="demo">
+                    <ItemTemplate>
+                          
+                        <asp:Label runat="server" ID="UnitPrice"
+                            TextMode="Number" step="0.01" min="0.00" max="10.00"></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>--%>
             </Columns>
             <EmptyDataTemplate>
             No data to view for the playlist.
